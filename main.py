@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes import players, drills, feedback, assignments
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = FastAPI(
     title="Soccer AI Development API",
