@@ -15,12 +15,16 @@ def generate_ai_feedback(payload: FeedbackCreate):
     drill = drills_db.get(payload.drill_id)
     if not drill:
         raise HTTPException(status_code=404, detail="Drill not found")
-    if not os.getenv("OPENAI_API_KEY"):
-        raise HTTPException(status_code=500, detail="OPENAI_API_KEY not set")
+    
+    api_key = os.environ.get("OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise HTTPException(status_code=500, detail=f"OPENAI_API_KEY not set. Env vars: {list(os.environ.keys())}")
+    
     try:
         ai_result = generate_feedback(player, drill, payload.coach_notes or "")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI feedback failed: {str(e)}")
+    
     feedback_id = new_id()
     feedback_data = {
         "id": feedback_id,
@@ -68,13 +72,17 @@ def get_weekly_plan(payload: WeeklyPlanRequest):
     player = players_db.get(payload.player_id)
     if not player:
         raise HTTPException(status_code=404, detail="Player not found")
-    if not os.getenv("OPENAI_API_KEY"):
-        raise HTTPException(status_code=500, detail="OPENAI_API_KEY not set")
+
+    api_key = os.environ.get("OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise HTTPException(status_code=500, detail=f"OPENAI_API_KEY not set. Env vars: {list(os.environ.keys())}")
+
     player_goals = payload.focus_skills or player["goals"]
     player_level = player["skill_level"]
     available = [d for d in drills_db.values() if d["skill_type"] in player_goals or d["level"] == player_level]
     if not available:
         available = list(drills_db.values())
+
     try:
         plan = generate_weekly_plan(player, available)
     except Exception as e:
