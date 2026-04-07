@@ -1,22 +1,47 @@
 import os
 import json
-from dotenv import load_dotenv
-
-load_dotenv()
+from openai import OpenAI
 
 def generate_weekly_plan(player: dict, available_drills: list) -> dict:
-    from openai import OpenAI
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    drill_summary = "\n".join([f"- {d['title']} ({d['skill_type']}, {d['level']}, {d['duration_minutes']} min)" for d in available_drills])
+    api_key = os.environ.get("OPENAI_API_KEY")
+    client = OpenAI(api_key=api_key)
+    
+    drill_summary = "\n".join([
+        f"- {d['title']} ({d['skill_type']}, {d['level']}, {d['duration_minutes']} min)"
+        for d in available_drills
+    ])
+
     prompt = f"""
-You are an expert youth soccer coach creating a weekly training plan.
-Player: {player.get('name')}, Age: {player.get('age')}, Level: {player.get('skill_level')}
-Goals: {', '.join(player.get('goals', []))}
-Training Days: {player.get('training_days_per_week')}
-Available Drills:
+You are an expert youth soccer development coach creating a weekly training plan.
+
+PLAYER PROFILE:
+- Name: {player.get('name')}
+- Age: {player.get('age')} years old
+- Position: {player.get('position')}
+- Skill Level: {player.get('skill_level')}
+- Dominant Foot: {player.get('dominant_foot')}
+- Goals: {', '.join(player.get('goals', []))}
+- Training Days Per Week: {player.get('training_days_per_week')}
+
+AVAILABLE DRILLS:
 {drill_summary}
-Respond ONLY with JSON:
-{{"week_theme": "<focus>", "plan": [{{"day": 1, "drill_title": "<title>", "skill_focus": "<skill>", "duration_minutes": <number>, "daily_tip": "<tip>"}}], "weekly_goal": "<goal>", "encouragement": "<message>"}}
+
+Create a {player.get('training_days_per_week')}-day training plan for this player.
+Respond ONLY with a JSON object in this exact format:
+{{
+  "week_theme": "<overarching focus for this week>",
+  "plan": [
+    {{
+      "day": 1,
+      "drill_title": "<drill name from the list above>",
+      "skill_focus": "<skill type>",
+      "duration_minutes": <number>,
+      "daily_tip": "<one motivating tip for that session>"
+    }}
+  ],
+  "weekly_goal": "<one measurable thing the player should achieve this week>",
+  "encouragement": "<a personal age-appropriate motivating message>"
+}}
 """
     response = client.chat.completions.create(
         model="gpt-4o-mini",
