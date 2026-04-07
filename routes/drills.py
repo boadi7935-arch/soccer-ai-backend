@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from models.schemas import DrillCreate
-from database.store import drills_db, players_db, new_id
+from database.store import drills_db, new_id
+from database.firebase_db import get_player
 from typing import Optional
 
 router = APIRouter()
@@ -16,7 +17,7 @@ def list_drills(skill_type: Optional[str] = None, level: Optional[str] = None):
 
 @router.get("/for-player/{player_id}")
 def get_drills_for_player(player_id: str):
-    player = players_db.get(player_id)
+    player = get_player(player_id)
     if not player:
         raise HTTPException(status_code=404, detail="Player not found")
     player_level = player["skill_level"]
