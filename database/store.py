@@ -108,3 +108,13 @@ def seed_drills():
         drills_db[drill["id"]] = drill
 
 seed_drills()
+
+# Import and add extra drills
+from database.drill_seeds import EXTRA_DRILLS
+
+def seed_extra_drills():
+    for drill in EXTRA_DRILLS:
+        drill_with_id = {**drill, "id": new_id()}
+        drills_db[drill_with_id["id"]] = drill_with_id
+
+seed_extra_drills()
