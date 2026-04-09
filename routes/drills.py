@@ -46,3 +46,11 @@ def create_drill(drill: DrillCreate):
     drill_data = {**drill.dict(), "id": drill_id}
     drills_db[drill_id] = drill_data
     return drill_data
+
+@router.get("/coach/{drill_id}")
+def get_coach_drill(drill_id: str):
+    from database.firebase_db import db
+    doc = db.collection('coach_drills').document(drill_id).get()
+    if doc.exists:
+        return {'id': doc.id, **doc.to_dict()}
+    raise HTTPException(status_code=404, detail="Coach drill not found")
