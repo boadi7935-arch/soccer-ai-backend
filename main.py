@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes import players, drills, feedback, assignments
 from routes.streaks import router as streaks_router
+from routes.coach_drills import router as coach_drills_router
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -25,7 +26,8 @@ app.include_router(drills.router, prefix="/drills", tags=["Drills"])
 app.include_router(assignments.router, prefix="/assignments", tags=["Assignments"])
 app.include_router(feedback.router, prefix="/feedback", tags=["Feedback"])
 app.include_router(streaks_router, prefix="/streaks", tags=["Streaks"])
+app.include_router(coach_drills_router, prefix="/coach-drills", tags=["Coach Drills"])
 
 @app.get("/")
 def root():
-    return {"message": "Soccer AI API is running ✅"}
+    return {"message": "Soccer AI API is running"}
