@@ -118,3 +118,9 @@ def seed_extra_drills():
         drills_db[drill_with_id["id"]] = drill_with_id
 
 seed_extra_drills()
+
+# Attach YouTube video IDs to drills
+from database.video_map import VIDEO_MAP
+for drill in drills_db.values():
+    if drill["title"] in VIDEO_MAP:
+        drill["youtube_id"] = VIDEO_MAP[drill["title"]]
