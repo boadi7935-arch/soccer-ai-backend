@@ -4,6 +4,7 @@ from database.store import drills_db, new_id, now
 from database.firebase_db import save_feedback, get_feedback, get_player_feedback, get_player, save_assignment, get_assignment
 from services.ai_feedback import generate_feedback
 from services.ai_plan import generate_weekly_plan
+from services.video_analysis import analyze_video_from_url
 import os
 
 router = APIRouter()
@@ -19,10 +20,24 @@ def generate_ai_feedback(payload: FeedbackCreate):
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
         raise HTTPException(status_code=500, detail="OPENAI_API_KEY not set")
+
+    video_analysis = None
+    if payload.video_url:
+        try:
+            video_analysis = analyze_video_from_url(
+                payload.video_url,
+                drill["title"],
+                drill.get("coaching_points", []),
+                drill["skill_type"]
+            )
+        except Exception as e:
+            print(f"Video analysis failed: {e}")
+
     try:
-        ai_result = generate_feedback(player, drill, payload.coach_notes or "")
+        ai_result = generate_feedback(player, drill, payload.coach_notes or "", video_analysis)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI feedback failed: {str(e)}")
+
     feedback_id = new_id()
     feedback_data = {
         "id": feedback_id,
@@ -35,6 +50,7 @@ def generate_ai_feedback(payload: FeedbackCreate):
         "correction": ai_result["correction"],
         "next_drill_suggestion": ai_result["next_drill_suggestion"],
         "summary": ai_result["summary"],
+        "video_analysis": video_analysis,
         "coach_approved": False,
         "created_at": now()
     }

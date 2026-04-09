@@ -5,3 +5,6 @@ openai
 python-dotenv
 python-multipart
 firebase-admin
+opencv-python-headless
+pillow
+requests
