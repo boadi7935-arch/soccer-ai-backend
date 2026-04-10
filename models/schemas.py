@@ -94,3 +94,10 @@ class FeedbackResponse(BaseModel):
 class WeeklyPlanRequest(BaseModel):
     player_id: str
     focus_skills: Optional[List[SkillType]] = None
+
+class PlayerUpdate(BaseModel):
+    avatar_type: Optional[str] = None
+    avatar_url: Optional[str] = None
+    avatar_emoji: Optional[str] = None
+    avatar_color: Optional[str] = None
+    avatar_label: Optional[str] = None

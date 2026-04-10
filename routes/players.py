@@ -16,7 +16,7 @@ def create_player(player: PlayerCreate):
     save_player(player_id, player_data)
     return player_data
 
-@router.get("/{player_id}", response_model=PlayerResponse)
+@router.get("/{player_id}")
 def get_player_route(player_id: str):
     player = get_player(player_id)
     if not player:
