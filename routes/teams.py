@@ -14,6 +14,7 @@ def generate_join_code():
 class TeamCreate(BaseModel):
     name: str
     coach_name: str
+    coach_id: Optional[str] = None
     age_group: Optional[str] = None
     description: Optional[str] = None
 
@@ -61,6 +62,11 @@ def get_team(team_id: str):
 @router.get("/coach/{coach_name}")
 def get_coach_teams(coach_name: str):
     docs = db.collection('teams').where('coach_name', '==', coach_name).stream()
+    return [{'id': doc.id, **doc.to_dict()} for doc in docs]
+
+@router.get("/by-coach-id/{coach_id}")
+def get_teams_by_coach_id(coach_id: str):
+    docs = db.collection('teams').where('coach_id', '==', coach_id).stream()
     return [{'id': doc.id, **doc.to_dict()} for doc in docs]
 
 @router.get("/{team_id}/players")
