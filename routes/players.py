@@ -27,6 +27,12 @@ def get_player_route(player_id: str):
 def list_players():
     return get_all_players()
 
+@router.delete("/{player_id}")
+def delete_player(player_id: str):
+    from database.firebase_db import db
+    db.collection('players').document(player_id).delete()
+    return {"message": "Player deleted"}
+
 @router.put("/{player_id}")
 def update_player(player_id: str, updates: dict):
     player = get_player(player_id)
