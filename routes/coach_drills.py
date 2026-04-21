@@ -44,6 +44,14 @@ def get_all_coach_drills():
     docs = db.collection('coach_drills').stream()
     return [{'id': doc.id, **doc.to_dict()} for doc in docs]
 
+@router.put("/{drill_id}/assign")
+def reassign_drill(drill_id: str, assigned_to: List[str]):
+    doc = db.collection('coach_drills').document(drill_id).get()
+    if not doc.exists:
+        raise HTTPException(status_code=404, detail="Drill not found")
+    db.collection('coach_drills').document(drill_id).update({'assigned_to': assigned_to})
+    return {"message": "Drill reassigned", "assigned_to": assigned_to}
+
 @router.delete("/{drill_id}")
 def delete_coach_drill(drill_id: str):
     db.collection('coach_drills').document(drill_id).delete()
