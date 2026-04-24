@@ -5,6 +5,7 @@ from routes.streaks import router as streaks_router
 from routes.coach_drills import router as coach_drills_router
 from routes.calendar import router as calendar_router
 from routes.teams import router as teams_router
+from routes.pro_review import router as pro_review_router
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -31,6 +32,7 @@ app.include_router(streaks_router, prefix="/streaks", tags=["Streaks"])
 app.include_router(coach_drills_router, prefix="/coach-drills", tags=["Coach Drills"])
 app.include_router(calendar_router, prefix="/calendar", tags=["Calendar"])
 app.include_router(teams_router, prefix="/teams", tags=["Teams"])
+app.include_router(pro_review_router, prefix="/pro-review", tags=["ProReview"])
 
 @app.get("/")
 def root():
