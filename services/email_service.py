@@ -145,3 +145,67 @@ def email_player_drill_assigned(player_email: str, player_name: str, drill_title
     </div>
     """
     return send_email(player_email, f"New Drill Assigned — {drill_title}", html)
+
+def email_streak_reminder(player_email: str, player_name: str, current_streak: int):
+    html = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a0a; color: white; padding: 32px; border-radius: 16px;">
+        <div style="text-align: center; margin-bottom: 32px;">
+            <h1 style="color: #00ffc8; font-size: 28px; margin: 0;">ORBIT<span style="color: white;">SOCCER</span></h1>
+        </div>
+        
+        <div style="background: #111; border: 1px solid #ff6b0050; border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 16px;">🔥</div>
+            <h2 style="color: #ff6b00; margin: 0 0 16px;">Don't Break Your Streak!</h2>
+            <p style="color: #aaa;">Hi {player_name}!</p>
+            <p style="color: #aaa;">You haven't trained in a few days. Don't let your {current_streak} day streak disappear!</p>
+            
+            <div style="background: #1a1a1a; border-radius: 10px; padding: 16px; margin: 16px 0;">
+                <p style="color: #ff6b00; font-size: 32px; font-weight: bold; margin: 0;">🔥 {current_streak} days</p>
+                <p style="color: #555; margin: 4px 0 0;">Current streak</p>
+            </div>
+            
+            <p style="color: #aaa;">Just 10 minutes of training today will keep your streak alive!</p>
+            
+            <div style="text-align: center; margin-top: 24px;">
+                <a href="https://orbitsoccer.com" 
+                   style="background: #ff6b00; color: white; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-block;">
+                    Train Now →
+                </a>
+            </div>
+        </div>
+        
+        <p style="color: #333; font-size: 12px; text-align: center;">OrbitSoccer · orbitsoccer.com</p>
+    </div>
+    """
+    return send_email(player_email, f"Don't break your streak, {player_name}! 🔥", html)
+
+def email_milestone_reached(player_email: str, player_name: str, milestone: str):
+    html = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a0a; color: white; padding: 32px; border-radius: 16px;">
+        <div style="text-align: center; margin-bottom: 32px;">
+            <h1 style="color: #00ffc8; font-size: 28px; margin: 0;">ORBIT<span style="color: white;">SOCCER</span></h1>
+        </div>
+        
+        <div style="background: #111; border: 1px solid #d4ff0050; border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 16px;">🏆</div>
+            <h2 style="color: #d4ff00; margin: 0 0 16px;">Milestone Reached!</h2>
+            <p style="color: #aaa;">Amazing work {player_name}!</p>
+            
+            <div style="background: #1a1a1a; border-radius: 10px; padding: 16px; margin: 16px 0;">
+                <p style="color: #d4ff00; font-size: 20px; font-weight: bold; margin: 0;">{milestone}</p>
+            </div>
+            
+            <p style="color: #aaa;">Keep training and reach even greater heights!</p>
+            
+            <div style="text-align: center; margin-top: 24px;">
+                <a href="https://orbitsoccer.com" 
+                   style="background: #d4ff00; color: #0a0a0a; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-block;">
+                    View Progress →
+                </a>
+            </div>
+        </div>
+        
+        <p style="color: #333; font-size: 12px; text-align: center;">OrbitSoccer · orbitsoccer.com</p>
+    </div>
+    """
+    return send_email(player_email, f"🏆 Milestone Reached — {milestone}!", html)
