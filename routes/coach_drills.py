@@ -3,6 +3,7 @@ from database.firebase_db import db
 from database.store import new_id, now
 from pydantic import BaseModel
 from typing import List, Optional
+from services.email_service import email_player_drill_assigned
 
 router = APIRouter()
 
@@ -27,6 +28,26 @@ def create_coach_drill(drill: CoachDrillCreate):
         "type": "coach_drill"
     }
     db.collection('coach_drills').document(drill_id).set(drill_data)
+    
+    # Send email to each assigned player
+    try:
+        for player_id in drill.assigned_to:
+            player_doc = db.collection('players').document(player_id).get()
+            if player_doc.exists:
+                player = player_doc.to_dict()
+                parent_email = player.get('parent_email')
+                player_email = player.get('email')
+                email_to = parent_email or player_email
+                if email_to:
+                    email_player_drill_assigned(
+                        player_email=email_to,
+                        player_name=player.get('name', 'Player'),
+                        drill_title=drill.title,
+                        coach_name=drill.coach_name
+                    )
+    except Exception as e:
+        print(f"Email error: {e}")
+    
     return drill_data
 
 @router.get("/player/{player_id}")
