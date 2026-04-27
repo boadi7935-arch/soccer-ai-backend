@@ -9,3 +9,4 @@ opencv-python-headless
 pillow
 requests
 resend
+stripe
