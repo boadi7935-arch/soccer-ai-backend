@@ -107,6 +107,11 @@ def create_review_request(request: ReviewRequest):
     
     return data
 
+@router.get("/requests/all")
+def get_all_requests():
+    docs = db.collection('pro_reviews').stream()
+    return [{'id': doc.id, **doc.to_dict()} for doc in docs]
+
 @router.get("/requests/player/{player_id}")
 def get_player_requests(player_id: str):
     docs = db.collection('pro_reviews').where('player_id', '==', player_id).stream()
@@ -149,6 +154,11 @@ def respond_to_request(request_id: str, coach_response: str, response_video_url:
         print(f"Email error: {e}")
     
     return {"message": "Response submitted"}
+
+@router.delete("/coaches/{coach_id}")
+def delete_coach_profile(coach_id: str):
+    db.collection('pro_coaches').document(coach_id).delete()
+    return {"message": "Coach deleted"}
 
 @router.put("/requests/{request_id}/rate")
 def rate_review(request_id: str, rating: int, comment: str = ""):
