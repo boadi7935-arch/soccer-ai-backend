@@ -209,3 +209,28 @@ def email_milestone_reached(player_email: str, player_name: str, milestone: str)
     </div>
     """
     return send_email(player_email, f"🏆 Milestone Reached — {milestone}!", html)
+
+def email_announcement(to: str, subject: str, message: str, name: str = ""):
+    html = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a0a; color: white; padding: 32px; border-radius: 16px;">
+        <div style="text-align: center; margin-bottom: 32px;">
+            <h1 style="color: #00ffc8; font-size: 28px; margin: 0;">ORBIT<span style="color: white;">SOCCER</span></h1>
+            <p style="color: #555; margin: 8px 0 0;">Official Announcement</p>
+        </div>
+        
+        <div style="background: #111; border: 1px solid #1f1f1f; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+            {f'<p style="color: #aaa;">Hi {name}!</p>' if name else ''}
+            <div style="color: #aaa; line-height: 1.8; white-space: pre-wrap;">{message}</div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 24px;">
+            <a href="https://orbitsoccer.com" 
+               style="background: #00ffc8; color: #0a0a0a; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-block;">
+                Open OrbitSoccer →
+            </a>
+        </div>
+        
+        <p style="color: #333; font-size: 12px; text-align: center; margin-top: 24px;">OrbitSoccer · orbitsoccer.com</p>
+    </div>
+    """
+    return send_email(to, subject, html)

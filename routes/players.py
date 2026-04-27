@@ -33,6 +33,24 @@ def delete_player(player_id: str):
     db.collection('players').document(player_id).delete()
     return {"message": "Player deleted"}
 
+@router.post("/announce")
+def announce_to_all(subject: str, message: str):
+    from services.email_service import email_announcement
+    from database.firebase_db import db
+    docs = db.collection('players').stream()
+    sent = 0
+    failed = 0
+    for doc in docs:
+        player = doc.to_dict()
+        email = player.get('parent_email') or player.get('email')
+        if email:
+            result = email_announcement(email, subject, message, player.get('name', ''))
+            if result:
+                sent += 1
+            else:
+                failed += 1
+    return {"sent": sent, "failed": failed, "total": sent + failed}
+
 @router.put("/{player_id}")
 def update_player(player_id: str, updates: dict):
     player = get_player(player_id)
