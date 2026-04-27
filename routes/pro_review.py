@@ -52,6 +52,20 @@ def get_all_coaches():
     docs = db.collection('pro_coaches').stream()
     return [{'id': doc.id, **doc.to_dict()} for doc in docs]
 
+@router.put("/coaches/{coach_id}")
+def update_coach_profile(coach_id: str, profile: CoachProfile):
+    doc = db.collection('pro_coaches').document(coach_id).get()
+    if not doc.exists:
+        raise HTTPException(status_code=404, detail="Coach not found")
+    existing = doc.to_dict()
+    updated = {
+        **existing,
+        **profile.dict(),
+        "id": coach_id,
+    }
+    db.collection('pro_coaches').document(coach_id).set(updated)
+    return updated
+
 @router.get("/coaches/{coach_id}")
 def get_coach(coach_id: str):
     doc = db.collection('pro_coaches').document(coach_id).get()
@@ -135,6 +149,39 @@ def respond_to_request(request_id: str, coach_response: str, response_video_url:
         print(f"Email error: {e}")
     
     return {"message": "Response submitted"}
+
+@router.put("/requests/{request_id}/rate")
+def rate_review(request_id: str, rating: int, comment: str = ""):
+    if rating < 1 or rating > 5:
+        raise HTTPException(status_code=400, detail="Rating must be between 1 and 5")
+    
+    doc = db.collection('pro_reviews').document(request_id).get()
+    if not doc.exists:
+        raise HTTPException(status_code=404, detail="Request not found")
+    
+    review = doc.to_dict()
+    coach_id = review.get('coach_profile_id')
+    
+    # Update review with rating
+    db.collection('pro_reviews').document(request_id).update({
+        'rating': rating,
+        'rating_comment': comment,
+        'rated_at': now()
+    })
+    
+    # Update coach overall rating
+    coach_doc = db.collection('pro_coaches').document(coach_id).get()
+    if coach_doc.exists:
+        coach = coach_doc.to_dict()
+        total_reviews = coach.get('total_reviews', 0) + 1
+        current_rating = coach.get('rating', 0)
+        new_rating = ((current_rating * (total_reviews - 1)) + rating) / total_reviews
+        db.collection('pro_coaches').document(coach_id).update({
+            'rating': round(new_rating, 1),
+            'total_reviews': total_reviews
+        })
+    
+    return {"message": "Rating submitted", "rating": rating}
 
 @router.put("/requests/{request_id}/status")
 def update_status(request_id: str, status: str):
